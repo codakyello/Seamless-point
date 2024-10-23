@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: [true, "Please provide a lastName"] },
   dob: {
     type: Date,
-    required: [true, "Please provide a DOB"],
+    // required: [true, "Please provide a DOB"],
   },
   gender: {
     type: String,
@@ -42,15 +42,6 @@ const userSchema = new mongoose.Schema({
   //   type: String,
   // },
   // balance: { type: Number },
-  //   name: { type: String, required: [true, "Please input your name"] },
-  //   email: {
-  //     type: String,
-  //     required: [true, "Email is required"], // Custom error message
-  //     unique: true, // Ensure the email is
-  //     match: [/.+@.+\..+/, "Please enter a valid email"], // Basic email
-  //   },
-  //   password: { type: String, required: true },
-  // },
   // { timestamps: true }
 });
 

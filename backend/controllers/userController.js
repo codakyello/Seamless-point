@@ -18,17 +18,15 @@ const createUser = catchAsync(async (req, res) => {
     name,
     email,
     password,
-    dob,
+    phone,
+    // dob,
     firstName,
     lastName,
-    gender,
+    // gender,
     confirmPassword,
   } = req.body;
+  const hashedPassword = bcrypt
 
-  // x;
-  // const x = 2;
-
-  // if (!email || !paswword) throw AppError("hhhh");
   const user = new User({
     name,
     email,
@@ -37,12 +35,11 @@ const createUser = catchAsync(async (req, res) => {
     firstName,
     lastName,
     gender,
-    confirmPassword,
+    // confirmPassword,
+    phone
   });
   await user.save();
   res.status(201).json(user);
 });
 
 module.exports = { getUsers, createUser };
-
-new Date("2");

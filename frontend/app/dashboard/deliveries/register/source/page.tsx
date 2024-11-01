@@ -10,6 +10,7 @@ import { Form } from "@/components/ui/form";
 import { createUser } from "@/lib/actions";
 import PrivacyPolicyBlock from "@/app/dashboard/components/PrivacyPolicyBlock";
 import ButtonFormSubmit from "@/components/ButtonFormSubmit";
+import Link from "next/link";
 
 export default function SignUp() {
   const form = useForm<z.infer<typeof deliverySourceSchema>>({
@@ -128,7 +129,9 @@ export default function SignUp() {
             />
           </div>
           <PrivacyPolicyBlock />
-          <ButtonFormSubmit text="Continue" />
+          <Link href="/dashboard/deliveries/register/destination">
+            <ButtonFormSubmit text="Continue" />
+          </Link>
         </form>
       </Form>
     </div>

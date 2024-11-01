@@ -1,7 +1,12 @@
+import { Input } from "@/components/ui/input";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import React from "react";
 
-export default function DebitCard() {
+export default function DebitCard({
+  onUpdatePayment,
+  onInitiateRemoveCard,
+  onUpdateCard,
+}) {
   return (
     <div className="p-5 bg-white justify-between gap-5 flex items-start rounded-2xl border border-neutral-200 leading-4">
       <div className="border p-1 px-2 leading-none border-neutral-200 rounded-lg">
@@ -35,11 +40,17 @@ export default function DebitCard() {
       <div className="flex flex-col gap-1">
         <span className="text-xl">Visa ending in 1234</span>
         <span>Expiry 01/2000</span>
-        <span className="mt-5 text-purple-700 font-bold">Edit</span>
+        <span
+          className="cursor-pointer mt-5 text-purple-700 font-bold"
+          onClick={onUpdatePayment}
+        >
+          Edit
+        </span>
       </div>
-      <div className="flex gap-3">
-        <Checkbox />
+      <div className="flex items-center gap-3">
+        <Input className="w-3" type="checkbox" onClick={onUpdateCard} />
         <svg
+          onClick={onInitiateRemoveCard}
           width={14}
           height={16}
           viewBox="0 0 14 16"

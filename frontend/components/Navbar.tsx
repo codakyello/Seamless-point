@@ -3,6 +3,9 @@ import React from "react";
 import Button, { ButtonVariant } from "./Button";
 import { usePathname } from "next/navigation";
 import { IoMenu } from "react-icons/io5";
+import { useApp } from "@/app/contexts/AppContext";
+import { Bell } from "lucide-react";
+import Image from "next/image";
 
 const siteRoutes = [
   { title: "Home", href: "/" },
@@ -13,7 +16,8 @@ const siteRoutes = [
 ];
 export default function Navbar() {
   //   const pathname = usePathname();
-  const user = "kfja";
+  const { user } = useApp();
+
   const pathname = usePathname();
   const isDashboardPage = pathname.startsWith("/dashboard");
 
@@ -54,7 +58,25 @@ export default function Navbar() {
           <IoMenu className="text-3xl cursor-pointer lg:hidden ml-5" />
         </>
       )}
-      {user && <div>profile</div>}
+      {user && (
+        <div className="flex gap-5 items-center">
+          <div className="relative translate-y-1">
+            <Bell opacity={0.65} size={20} />
+            <div className="absolute top-0 font-bold right-0 translate-x-[20%] translate-y-[-40%] w-4 h-4 grid place-items-center rounded-full text-xs bg-orange-500 text-white">
+              2
+            </div>
+          </div>
+          <Link href="/dashboard">
+            <Image
+              className="h-10 w-10 rounded-full object-cover"
+              src="/assets/images/avatar.jpg"
+              width={100}
+              height={100}
+              alt="profile image"
+            />
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

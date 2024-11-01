@@ -108,7 +108,10 @@ export function DataTable({ data, columns }) {
               <TableRow className="border-b" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead className="whitespace-nowrap text-xs text-neutral-400 font-bold uppercase" key={header.id}>
+                    <TableHead
+                      className="whitespace-nowrap text-xs text-neutral-400 font-bold uppercase"
+                      key={header.id}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -124,7 +127,8 @@ export function DataTable({ data, columns }) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow className="border-b"
+                <TableRow
+                  className="border-b"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >

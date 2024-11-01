@@ -7,6 +7,7 @@ import { Plus_Jakarta_Sans } from "@next/font/google";
 import Navbar from "../components/Navbar";
 import Footer from "@/components/Footer";
 import { usePathname } from "next/navigation";
+import { AppProvider } from "./contexts/AppContext";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -30,15 +31,17 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${plusJakartaSans.className} antialiased`}>
         <div
-          // style={
-          //   isDashboardPage
-          //     ? { display: "grid", gridTemplateRows: "auto 1fr" }
-          //     : {}
-          // }
-          // className={`${isDashboardPage ? "min-h-screen" : ""}`}
+        // style={
+        //   isDashboardPage
+        //     ? { display: "grid", gridTemplateRows: "auto 1fr" }
+        //     : {}
+        // }
+        // className={`${isDashboardPage ? "min-h-screen" : ""}`}
         >
-          <Navbar />
-          {children}
+          <AppProvider>
+            <Navbar />
+            {children}
+          </AppProvider>
         </div>
         {!isDashboardPage && <Footer />}
       </body>

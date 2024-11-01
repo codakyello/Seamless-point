@@ -11,10 +11,18 @@ export enum BadgeVariant {
 
 interface Props {
   className?: string;
+  text?: string;
   variant: BadgeVariant;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  isRoundedFull?: boolean;
 }
-export default function Badge({ className, variant, children }: Props) {
+export default function Badge({
+  className,
+  variant,
+  text,
+  children,
+  isRoundedFull = false,
+}: Props) {
   return (
     <span
       className={clsx(
@@ -26,11 +34,12 @@ export default function Badge({ className, variant, children }: Props) {
             variant === BadgeVariant.neutralDark,
           "bg-red-100 text-red-500": variant === BadgeVariant.red,
           "bg-green-100 text-green-500": variant === BadgeVariant.green,
+          "!rounded-full": isRoundedFull,
         },
         className
       )}
     >
-      {children}
+      {text || children}
     </span>
   );
 }

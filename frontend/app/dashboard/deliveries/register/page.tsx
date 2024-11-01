@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 export default function Register() {
@@ -5,7 +6,10 @@ export default function Register() {
     <>
       <h1 className="headline text-center">What are you trying to deliver</h1>
       <div className="flex flex-wrap gap-10 justify-center">
-        <div className="flex flex-col gap-3">
+        <Link
+          href="/dashboard/deliveries/register/source"
+          className="flex flex-col gap-3"
+        >
           <div className="card flex-1 bg-white flex flex-col">
             <div className="flex-1 grid place-items-center px-5 py-10">
               <svg
@@ -479,8 +483,11 @@ export default function Register() {
             </div>
           </div>
           <span className="text-muted">Food stuff, drinks and meat, etc.</span>
-        </div>
-        <div className="flex flex-col gap-3">
+        </Link>
+        <Link
+          href="/dashboard/deliveries/register/source"
+          className="flex flex-col gap-3"
+        >
           <div className="card flex-1 bg-white flex flex-col">
             <div className="flex-1 grid place-items-center px-5 py-10">
               <svg
@@ -1076,7 +1083,7 @@ export default function Register() {
             </div>
           </div>
           <span className="text-muted">Furniture, etc.</span>
-        </div>
+        </Link>
       </div>
     </>
   );

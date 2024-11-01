@@ -17,11 +17,11 @@ export default function DashboardLayout({
         style={{
           minHeight: "calc(100vh - 4rem)",
         }}
-        className="
+        className="p-5 md:p-6 lg:p-8 
         mx-auto 
-        md:ml-72 ml-16 p-6 sm:p-10 md:p-16 lg:pe-36 xl:pe-32 overflow-auto"
+        md:ml-72 ml-16 overflow-auto"
       >
-        <div className="space-y-10 h-full">{children}</div>
+        <div className="relative z-10 space-y-10 h-full">{children}</div>
         <Image
           style={{
             height: "calc(100vh - 8rem)",

@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,6 +18,27 @@
   --clr-orange--light: #fde9d7;
   --clr-blue: #0daced;
   --clr-blue--light: #e0f3fe;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 8.5px;
+  height: 8.5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  @apply bg-neutral-200 rounded-lg;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-400 rounded-full;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neutral-400;
 }
 
 body {
@@ -41,6 +64,9 @@ body {
 }
 .text-muted {
   @apply text-black text-opacity-20;
+}
+.text-light {
+  @apply text-neutral-400;
 }
 .headline {
   @apply text-4xl lg:text-5xl font-bold !leading-snug text-center;

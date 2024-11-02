@@ -3,11 +3,16 @@ import React from "react";
 import DebitCard from "./DebitCard";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 
+type Props = {
+  onUpdatePayment?: any;
+  onInitiateRemoveCard?: any;
+  onUpdateCard?: any;
+};
 export default function SelectDebitCard({
   onUpdatePayment,
   onInitiateRemoveCard,
   onUpdateCard,
-}) {
+}: Props) {
   return (
     <div className="space-y-10">
       <div className="flex justify-between items-center py-3 border-b border-neutral-200">
@@ -16,17 +21,17 @@ export default function SelectDebitCard({
       </div>
       <div className="flex gap-5 flex-wrap">
         <DebitCard
-        onUpdatePayment={onUpdatePayment}
+          onUpdatePayment={onUpdatePayment}
           onInitiateRemoveCard={onInitiateRemoveCard}
           onUpdateCard={onUpdateCard}
         />
         <DebitCard
-        onUpdatePayment={onUpdatePayment}
+          onUpdatePayment={onUpdatePayment}
           onInitiateRemoveCard={onInitiateRemoveCard}
           onUpdateCard={onUpdateCard}
         />
         <DebitCard
-        onUpdatePayment={onUpdatePayment}
+          onUpdatePayment={onUpdatePayment}
           onInitiateRemoveCard={onInitiateRemoveCard}
           onUpdateCard={onUpdateCard}
         />

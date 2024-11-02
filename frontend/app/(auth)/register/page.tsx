@@ -728,14 +728,18 @@ export default function SignUp() {
                 className="text-sm px-3 py-2"
                 variant={ButtonVariant.neutralLight}
               >
-                <FaGoogle className="text-lg" />
+                <div className="text-lg">
+                  <FaGoogle />
+                </div>
                 <span>Sign up with Google</span>
               </Button>
               <Button
                 className="text-sm px-3 py-2"
                 variant={ButtonVariant.neutralDark}
               >
-                <FaApple className="text-lg" />
+                <div className="text-lg">
+                  <FaApple />
+                </div>
                 <span>Sign up with Apple</span>
               </Button>
             </div>

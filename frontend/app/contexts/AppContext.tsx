@@ -1,7 +1,11 @@
-import { createContext, useContext } from "react";
-
-const AppContext = createContext();
-export function AppProvider({ children }) {
+import React, { createContext, useContext } from "react";
+const defaultValues = {
+  user: {
+    role: "user",
+  },
+};
+const AppContext = createContext(defaultValues);
+export function AppProvider({ children }: { children: React.ReactNode }) {
   const user = {
     role: "user",
   };

@@ -38,7 +38,7 @@ export default function Notifications() {
       {notifications && (
         <div className={`space-y-5`}>
           {Array.from({ length: 5 }, (_, i) => (
-            <Notification />
+            <Notification key={i} />
           ))}
         </div>
       )}

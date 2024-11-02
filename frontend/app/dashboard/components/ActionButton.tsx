@@ -1,6 +1,12 @@
 import React from "react";
 
-export default function ActionButton({ icon, text }) {
+export default function ActionButton({
+  icon,
+  text,
+}: {
+  icon: any;
+  text: string;
+}) {
   return (
     <div className="p-5 rounded-xl items-center flex gap-6 bg-orange-100 bg-opacity-40">
       <span className="rounded-full bg-orange-200 p-2 w-20 aspect-square grid place-items-center">

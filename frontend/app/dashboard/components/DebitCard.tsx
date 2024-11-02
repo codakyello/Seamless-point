@@ -2,11 +2,16 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import React from "react";
 
+type Props = {
+  onUpdatePayment?: any;
+  onInitiateRemoveCard?: any;
+  onUpdateCard?: any;
+};
 export default function DebitCard({
   onUpdatePayment,
   onInitiateRemoveCard,
   onUpdateCard,
-}) {
+}: Props) {
   return (
     <div className="p-5 bg-white justify-between gap-5 flex items-start rounded-2xl border border-neutral-200 leading-4">
       <div className="border p-1 px-2 leading-none border-neutral-200 rounded-lg">

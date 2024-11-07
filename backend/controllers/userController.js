@@ -25,7 +25,7 @@ const createUser = catchAsync(async (req, res) => {
     // gender,
     confirmPassword,
   } = req.body;
-  const hashedPassword = bcrypt
+  // const hashedPassword = bcrypt
 
   const user = new User({
     name,
@@ -36,7 +36,7 @@ const createUser = catchAsync(async (req, res) => {
     lastName,
     gender,
     // confirmPassword,
-    phone
+    phone,
   });
   await user.save();
   res.status(201).json(user);

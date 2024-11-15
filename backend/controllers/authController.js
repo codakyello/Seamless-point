@@ -293,15 +293,13 @@ module.exports.forgotUserPassword = catchAsync(async function (req, res) {
 
   await user.save({ validateBeforeSave: false });
 
-  const resetURL = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/users/resetPassword/${resetToken}`;
+  const resetURL = `${req.protocol}://seamless-point/auth/user/resetpassword?token=${resetToken}`;
 
   await new Email(user).sendResetToken(resetURL);
 
   res.status(200).json({
     status: "success",
-    message: "Token sent to your email!",
+    message: "Reset token sent to your email!",
   });
 });
 

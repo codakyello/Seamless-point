@@ -294,7 +294,7 @@ module.exports.forgotUserPassword = catchAsync(async function (req, res) {
 
   await user.save({ validateBeforeSave: false });
 
-  const resetURL = `${FRONTEND_URL}/auth/user/resetpassword?token=${resetToken}`;
+  const resetURL = `${FRONTEND_URL}/auth/user/reset-password?token=${resetToken}`;
 
   await new Email(user).sendResetToken(resetURL);
 
@@ -306,10 +306,9 @@ module.exports.forgotUserPassword = catchAsync(async function (req, res) {
 
 exports.resetUserPassword = catchAsync(async (req, res) => {
   const { password, confirmPassword } = req.body;
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(req.params.token)
-    .digest("hex");
+  const token = req.query.token;
+  if (!token) throw new AppError("Please provide a token", 400);
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,
@@ -399,10 +398,10 @@ module.exports.forgotAdminPassword = catchAsync(async function (req, res) {
 
 exports.resetAdminPassword = catchAsync(async (req, res) => {
   const { password, confirmPassword } = req.body;
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(req.params.token)
-    .digest("hex");
+  const token = req.query.token;
+  if (!token) throw new AppError("Please provide a token", 400);
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
   const admin = await Admin.findOne({
     passwordResetToken: hashedToken,

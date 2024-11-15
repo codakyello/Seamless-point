@@ -7,6 +7,7 @@ const { verifyJwt } = require("../utils/jwt.js");
 const Email = require("../utils/email");
 
 const { createSendToken } = require("../utils/helpers");
+const { FRONTEND_URL } = require("../utils/const.js");
 
 exports.authenticate = catchAsync(async (req, _res, next) => {
   let token =
@@ -293,7 +294,7 @@ module.exports.forgotUserPassword = catchAsync(async function (req, res) {
 
   await user.save({ validateBeforeSave: false });
 
-  const resetURL = `${req.protocol}://seamless-point/auth/user/resetpassword?token=${resetToken}`;
+  const resetURL = `${FRONTEND_URL}/auth/user/resetpassword?token=${resetToken}`;
 
   await new Email(user).sendResetToken(resetURL);
 

@@ -275,10 +275,10 @@ exports.adminLogin = catchAsync(async (req, res) => {
 
 module.exports.forgotUserPassword = catchAsync(async function (req, res) {
   // find the userId based on email
-  const { my_email } = req.body;
-  if (!my_email) throw new AppError("Please provide an email", 400);
+  const { email } = req.body;
+  if (!email) throw new AppError("Please provide an email", 400);
 
-  const user = await User.findOne({ my_email });
+  const user = await User.findOne({ email });
 
   if (user && user.authType !== "credentials") {
     throw new AppError(

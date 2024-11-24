@@ -34,12 +34,12 @@ router
   )
   .patch(
     authController.authenticate,
-    authController.authorize("admin"),
+    authController.authorize("user"),
     userController.updateMe
   )
   .delete(
     authController.authenticate,
-    authController.authorize("admin"),
+    authController.authorize("user"),
     userController.deleteMe
   );
 

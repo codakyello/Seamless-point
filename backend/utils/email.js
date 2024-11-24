@@ -30,6 +30,7 @@ class Email {
       }
     );
 
+    console.log(this.user.email);
     try {
       await this.transporter.sendMail({
         from: "Seamless Point test@roware.xyz",

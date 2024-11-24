@@ -292,6 +292,7 @@ module.exports.forgotUserPassword = catchAsync(async function (req, res) {
 
   const resetToken = user.createPasswordResetToken();
 
+  console.log(resetToken);
   await user.save({ validateBeforeSave: false });
 
   const resetURL = `${FRONTEND_URL}/auth/user/reset-password?token=${resetToken}`;

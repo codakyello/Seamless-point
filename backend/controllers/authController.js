@@ -178,7 +178,18 @@ exports.userLogin = catchAsync(async (req, res) => {
   if (!email || !password)
     throw new AppError("Please provide email and password", 400);
 
-  const user = await User.findOne({ email, authType: "credentials" }).select(
+  let user = await User.findOne({
+    email,
+    authType: { $ne: "credentials" },
+  });
+
+  if (user)
+    throw new AppError(
+      `You are already signed up with ${user.authType}. Please sign in with ${user.authType}`,
+      400
+    );
+
+  user = await User.findOne({ email, authType: "credentials" }).select(
     "+password"
   );
 

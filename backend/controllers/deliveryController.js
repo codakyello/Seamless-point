@@ -11,7 +11,10 @@ module.exports.createDelivery = catchAsync(async (req, res) => {
 
   const newDelivery = await Delivery.create({ ...req.body, user: req.user.id });
 
-  sendSuccessResponseData(res, "delivery", newDelivery);
+  sendSuccessResponseData(res, "delivery", {
+    delivery: newDelivery,
+    message: "Your package is pending confirmation",
+  });
 });
 
 module.exports.getAllDelivery = catchAsync(async (req, res) => {

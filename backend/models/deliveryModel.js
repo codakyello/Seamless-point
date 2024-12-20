@@ -67,9 +67,9 @@ const deliverySchema = new mongoose.Schema(
       unique: true,
       default: generateTrackingID,
     },
-    packageType: {
+    deliveryType: {
       type: String,
-      enum: ["regular", "food"],
+      enum: ["regular-items", "food-items"],
       required: true,
     },
 
@@ -115,11 +115,11 @@ const deliverySchema = new mongoose.Schema(
     },
 
     // Receiver's information
-    toFirstname: {
+    toFirstName: {
       type: String,
       required: true,
     },
-    toLastname: {
+    toLastName: {
       type: String,
       required: true,
     },

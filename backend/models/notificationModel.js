@@ -3,13 +3,6 @@ const mongoose = require("mongoose");
 
 const notificationSchema = new mongoose.Schema(
   {
-    // The user who will receive the notification
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-
     // Title or brief message for the notification
     title: {
       type: String,
@@ -22,7 +15,24 @@ const notificationSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Type of notification (e.g., "info", "warning", "success", "error", etc.)
+    // The user who will receive the notification
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    // Type of the notification (e.g., "Payment", "Delivery", "Other")
+    referenceType: {
+      type: String,
+      required: true,
+      enum: ["Payment", "Delivery", "Other"], // Add more as needed
+    },
+    referenceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    // type of the notification (e.g., "info", "warning", "success", "error", etc.)
     type: {
       type: String,
       enum: ["info", "warning", "success", "error"],

@@ -4,8 +4,8 @@ class APIFEATURES {
     this.queryString = queryString;
   }
 
-  filter() {
-    const queryObj = { ...this.queryString };
+  filter(filterObj) {
+    const queryObj = { ...this.queryString, ...filterObj };
     console.log(queryObj);
     const excludedFields = ["page", "sort", "limit", "fields"];
 

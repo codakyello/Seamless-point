@@ -11,10 +11,15 @@ module.exports.createDelivery = catchAsync(async (req, res) => {
 
   const newDelivery = await Delivery.create({ ...req.body, user: req.user.id });
 
-  sendSuccessResponseData(res, "delivery", {
-    delivery: newDelivery,
+  await Notifications.create({
+    user: newDelivery.user,
+    title: "Delivery pending!",
     message: "Your package is pending confirmation",
+    referenceType: "Delivery",
+    referenceId: newDelivery._id,
   });
+
+  sendSuccessResponseData(res, "delivery", newDelivery);
 });
 
 module.exports.getAllDelivery = catchAsync(async (req, res) => {
@@ -25,6 +30,19 @@ module.exports.getAllDelivery = catchAsync(async (req, res) => {
     .limitFields();
 
   const totalCount = await Delivery.countDocuments();
+
+  const deliveries = await apiFeatures.query;
+
+  sendSuccessResponseData(res, "delivery", deliveries, totalCount);
+});
+module.exports.getAllUserDelivery = catchAsync(async (req, res) => {
+  const apiFeatures = new APIFEATURES(Delivery, req.query)
+    .filter({ user: req.user.id })
+    .sort()
+    .paginate()
+    .limitFields();
+
+  const totalCount = await Delivery.countDocuments({ user: req.user.id });
 
   const deliveries = await apiFeatures.query;
 

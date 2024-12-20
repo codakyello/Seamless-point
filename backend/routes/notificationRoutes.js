@@ -10,6 +10,13 @@ router.get(
   notificationController.getAllNotifications
 );
 
+router.get(
+  "/user",
+  authController.authenticate,
+  authController.authorize("user"),
+  notificationController.getAllUserNotifications
+);
+
 router
   .route("/:id")
   .patch(

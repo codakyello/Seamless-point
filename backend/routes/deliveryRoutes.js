@@ -15,7 +15,12 @@ router
     authController.authorize("user"),
     deliveryController.createDelivery
   );
-
+router.get(
+  "/user",
+  authController.authenticate,
+  authController.authorize("user"),
+  deliveryController.getAllUserDelivery
+);
 router
   .route("/:id")
   .get(

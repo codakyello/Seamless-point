@@ -6,6 +6,14 @@ const AppError = require("../utils/appError");
 const { catchAsync, filterObj } = require("../utils/helpers");
 const { sendSuccessResponseData } = require("../utils/helpers");
 
+module.exports.alistLatestUsers = (req, res, next) => {
+  req.query.limit = "5";
+  req.query.sort = "-createdAt";
+  req.query.fields = "firstName,lastName,email";
+  // req.query.sort = '-ratingsAverage,price';
+  // req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
 module.exports.getAllUser = catchAsync(async function (req, res) {
   const apiFeatures = new APIFEATURES(User, req.query)
     .filter()

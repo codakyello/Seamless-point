@@ -87,5 +87,13 @@ router.get(
   authController.authorize("admin"),
   userController.getAllUser
 );
+router
+  .route("/latest")
+  .get(
+    authController.authenticate,
+    authController.authorize("admin"),
+    userController.alistLatestUsers,
+    userController.getAllUser
+  );
 
 module.exports = router;

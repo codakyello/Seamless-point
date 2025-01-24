@@ -15,12 +15,21 @@ router
     authController.authorize("user"),
     deliveryController.createDelivery
   );
-router.get(
-  "/user",
-  authController.authenticate,
-  authController.authorize("user"),
-  deliveryController.getAllUserDelivery
-);
+router
+  .route("/user")
+  .get(
+    authController.authenticate,
+    authController.authorize("user"),
+    deliveryController.getAllUserDelivery
+  );
+router
+  .route("/latest")
+  .get(
+    authController.authenticate,
+    authController.authorize("admin", "user"),
+    deliveryController.aliasLatestDeliveries,
+    deliveryController.getAllDelivery
+  );
 router
   .route("/:id")
   .get(

@@ -6,6 +6,14 @@ const AppError = require("../utils/appError");
 const Email = require("../utils/email");
 const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
 
+module.exports.aliasLatestDeliveries = (req, res, next) => {
+  req.query.limit = "5";
+  req.query.sort = "-createdAt";
+  req.query.fields = "firstName,lastName,email,toState,status";
+  // req.query.sort = '-ratingsAverage,price';
+  // req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
 module.exports.createDelivery = catchAsync(async (req, res) => {
   // Add logic to check available balance before creating a delivery
 
@@ -58,7 +66,9 @@ module.exports.getDelivery = catchAsync(async (req, res) => {
 
   sendSuccessResponseData(res, "delivery", delivery);
 });
-
+module.exports.cancelDelivery = catchAsync(async (req, res) => {
+  const { deliveryId } = req.params;
+});
 module.exports.updateDelivery = catchAsync(async (req, res) => {
   const { status, driver, user, ...rest } = req.body;
 

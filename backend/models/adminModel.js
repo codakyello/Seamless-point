@@ -25,7 +25,7 @@ const adminSchema = new mongoose.Schema(
 
     phoneNumber: {
       type: String,
-      required: [true, "Please provide your phone number"],
+      // required: [true, "Please provide your phone number"],
       validate: {
         validator: function (v) {
           return phoneNumberRegex.test(v);
@@ -37,7 +37,7 @@ const adminSchema = new mongoose.Schema(
     role: { type: String, default: "admin" },
     password: {
       type: String,
-      required: [true, "Please provide a password"],
+      // required: [true, "Please provide a password"],
       minlength: [8, "Password must be at least 8 characters"],
     },
     confirmPassword: {
@@ -48,7 +48,7 @@ const adminSchema = new mongoose.Schema(
         },
         message: "Passwords do not match!",
       },
-      required: [true, "Please confirm your password"],
+      // required: [true, "Please confirm your password"],
     },
     authType: {
       type: String,

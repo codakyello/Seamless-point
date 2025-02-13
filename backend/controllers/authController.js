@@ -232,6 +232,11 @@ exports.adminSignUp = catchAsync(async (req, res) => {
       409
     );
 
+  const { password, confirmPassword, phoneNumber } = req.body;
+  if (!password || !confirmPassword)
+    throw new AppError("Password and confirm password are compulsory", 400);
+  if (!phoneNumber) throw new AppError("Please provide your phone number", 400);
+
   const existingAdmins = await Admin.find();
   const isRoot = !existingAdmins.length ? true : false;
 
@@ -262,7 +267,7 @@ module.exports.adminSignIn = catchAsync(async function (req, res) {
 
   if (!admin)
     admin = await new Admin(req.body).save({
-      validateBeforeSave: false,
+      // validateBeforeSave: false,
     });
 
   console.log("signin");

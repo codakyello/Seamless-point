@@ -14,6 +14,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const deliveryRoutes = require("./routes/deliveryRoutes");
 const driverRoutes = require("./routes/driverRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const transactionRoutes = require("./routes/transactionRoutes");
 
 dotenv.config({ path: "./config.env" });
 
@@ -44,17 +45,18 @@ app.use("/api/v1/users", userRoutes);
 
 app.use("/api/v1/admins", adminRoutes);
 
-app.use("/api/v1/deliveries", deliveryRoutes);
+app.use("/api/v1/delivery", deliveryRoutes);
 
 app.use("/api/v1/drivers", driverRoutes);
 
 app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/transactions", transactionRoutes);
 
 app.get("/", (_req, res) => {
   res.send("<h1>Deployment Check</h1>");
 });
 
-app.use("*", (req, _res, next) => {
+app.get("*", (req, _res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 

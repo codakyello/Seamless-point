@@ -39,17 +39,6 @@ module.exports.updateMe = catchAsync(async (req, res, next) => {
   // 2) We dont want to update the email and name and other sensitive info
   const filteredBody = filterObj(req.body, "dob");
 
-  // include updating balace in the body
-
-  const balance = req.body.balance;
-
-  if (!balance || isNaN(balance))
-    throw new AppError("Balance is required and must be a number", 400);
-
-  if (balance) {
-    filteredBody.balance = balance;
-  }
-
   const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
     new: true,
     runValidators: true,

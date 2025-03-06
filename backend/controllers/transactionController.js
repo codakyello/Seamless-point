@@ -1,7 +1,46 @@
-import crypto from "crypto";
+const crypto = require("crypto");
+const Transaction = require("../models/transactionModel");
+const User = require("../models/userModel");
+const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
+const AppError = require("../utils/appError");
+
+module.exports.createTransaction = catchAsync(async (req, res, next) => {
+  const { amount, type } = req.body;
+
+  console.log(amount);
+
+  if (!amount || isNaN(amount) || amount <= 0) {
+    return next(new AppError("Amount must be a positive number", 400));
+  }
+
+  const user = await User.findById(req.user._id);
+  if (!user) return next(new AppError("User not found", 404));
+
+  if (type === "withdrawal" && user.balance < amount) {
+    return next(new AppError("Insufficient balance", 400));
+  }
+
+  // Create a transaction
+  const transaction = await Transaction.create({
+    user: req.user._id,
+    amount,
+    type,
+    status: "completed",
+  });
+
+  // Update user balance
+  if (type === "deposit") {
+    user.balance += amount;
+  } else if (type === "withdrawal") {
+    user.balance -= amount;
+  }
+  await user.save();
+
+  sendSuccessResponseData(res, "transaction", transaction, user.balance);
+});
 
 // Initialize Transaction
-export const initializeTransaction = async (req, res) => {
+module.exports.initializeTransaction = catchAsync(async (req, res) => {
   try {
     const { email, amount } = req.body;
 
@@ -32,10 +71,10 @@ export const initializeTransaction = async (req, res) => {
     console.error("Error initializing transaction:", error.message);
     res.status(500).json({ error: error.message || "Internal Server Error" });
   }
-};
+});
 
 // Verify Transaction
-export const verifyTransaction = async (req, res) => {
+module.exports.verifyTransaction = catchAsync(async (req, res) => {
   try {
     const { reference } = req.query;
 
@@ -65,10 +104,10 @@ export const verifyTransaction = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message || "Error verifying payment" });
   }
-};
+});
 
 // Webhook for Paystack
-export const webhook = async (req, res) => {
+module.exports.webhook = catchAsync(async (req, res) => {
   try {
     const secret = process.env.PAYSTACK_SECRET_KEY;
     const signature = req.headers["x-paystack-signature"];
@@ -96,35 +135,4 @@ export const webhook = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Webhook processing failed" });
   }
-};
-
-// Get Transaction Fee
-// export const getTransactionFee = async (req, res) => {
-//   try {
-//     const { amount } = req.body;
-
-//     if (!amount) {
-//       return res.status(400).json({ error: "Amount is required" });
-//     }
-
-//     const response = await fetch(
-//       `https://api.paystack.co/transaction/fee?amount=${amount}`,
-//       {
-//         method: "GET",
-//         headers: {
-//           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-
-//     const data = await response.json();
-//     if (!response.ok)
-//       throw new Error(data.message || "Failed to fetch transaction fee");
-
-//     res.json(data);
-//   } catch (error) {
-//     console.error("Error getting transaction fee:", error.message);
-//     res.status(500).json({ error: error.message || "Internal Server Error" });
-//   }
-// };
+});

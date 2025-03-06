@@ -3,9 +3,9 @@ const {
   initializeTransaction,
   verifyTransaction,
   webhook,
-  // getTransactionFee,
+  createTransaction,
 } = require("../controllers/transactionController");
-
+const authController = require("../controllers/authController");
 const router = express.Router();
 
 router.post("/paystack/initialize", initializeTransaction);
@@ -19,7 +19,11 @@ router.get(
   }),
   webhook
 );
-
-// router.post("/paystack/fee", getTransactionFee);
+router.post(
+  "/create",
+  authController.authenticate,
+  authController.authorize("user"),
+  createTransaction
+);
 
 module.exports = router;

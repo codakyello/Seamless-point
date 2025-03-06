@@ -39,6 +39,10 @@ export const verifyTransaction = async (req, res) => {
   try {
     const { reference } = req.query;
 
+    if (!reference) {
+      return res.status(400).json({ error: "Reference is required" });
+    }
+
     const response = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {

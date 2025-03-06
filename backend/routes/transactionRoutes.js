@@ -9,7 +9,7 @@ const {
 const router = express.Router();
 
 router.post("/paystack/initialize", initializeTransaction);
-router.get("/paystack/verify/:reference", verifyTransaction);
+router.get("/paystack/verify", verifyTransaction);
 router.get(
   "/webhook",
   express.json({

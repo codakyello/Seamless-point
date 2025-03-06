@@ -41,6 +41,9 @@ app.use(
 app.use(express.static(`${__dirname}/public`));
 
 // Routes
+app.get("/", (_, res) => {
+  res.send("Welcome to the Seamless Point API");
+});
 app.use("/api/v1/users", userRoutes);
 
 app.use("/api/v1/admins", adminRoutes);

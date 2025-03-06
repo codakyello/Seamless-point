@@ -1,6 +1,6 @@
-import axios from "axios";
+import crypto from "crypto";
 
-// Anything that involves money transfers payments, deposits, withdrawals, delivery fee
+// Initialize Transaction
 export const initializeTransaction = async (req, res) => {
   try {
     const { email, amount } = req.body;
@@ -11,91 +11,102 @@ export const initializeTransaction = async (req, res) => {
 
     console.log(process.env.PAYSTACK_SECRET_KEY);
 
-    const response = await axios.post(
+    const response = await fetch(
       "https://api.paystack.co/transaction/initialize",
       {
-        email,
-        amount,
-      },
-      {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ email, amount }),
       }
     );
 
-    res.json(response.data);
+    const data = await response.json();
+    if (!response.ok)
+      throw new Error(data.message || "Failed to initialize transaction");
+
+    res.json(data);
   } catch (error) {
-    console.error(
-      "Error initializing transaction:",
-      error.response?.data || error.message
-    );
-    res
-      .status(500)
-      .json({ error: error.response?.data || "Internal Server Error" });
+    console.error("Error initializing transaction:", error.message);
+    res.status(500).json({ error: error.message || "Internal Server Error" });
   }
 };
 
+// Verify Transaction
 export const verifyTransaction = async (req, res) => {
   try {
     const { reference } = req.query;
 
-    const response = await axios.get(
+    const response = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
         },
       }
     );
 
-    if (response.data.data.status === "success") {
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Verification failed");
+
+    if (data.data.status === "success") {
       // TODO: Update database with successful transaction
       res.json({ status: true, message: "Payment verified" });
     } else {
       res.status(400).json({ status: false, message: "Payment not verified" });
     }
   } catch (error) {
-    res.status(400).json({ error: error.response.data });
+    res.status(400).json({ error: error.message || "Error verifying payment" });
   }
 };
+
+// Webhook for Paystack
 export const webhook = async (req, res) => {
-  const secret = process.env.PAYSTACK_SECRET_KEY;
-  const signature = req.headers["x-paystack-signature"];
+  try {
+    const secret = process.env.PAYSTACK_SECRET_KEY;
+    const signature = req.headers["x-paystack-signature"];
 
-  const hash = crypto
-    .createHmac("sha512", secret)
-    .update(req.rawBody)
-    .digest("hex");
+    const hash = crypto
+      .createHmac("sha512", secret)
+      .update(req.rawBody)
+      .digest("hex");
 
-  if (hash !== signature) {
-    return res.status(401).json({ error: "Invalid webhook signature" });
-  }
+    if (hash !== signature) {
+      return res.status(401).json({ error: "Invalid webhook signature" });
+    }
 
-  const event = req.body;
+    const event = req.body;
 
-  if (event.event === "charge.success") {
-    const paymentData = event.data;
-    console.log("Payment Verified via Webhook:", paymentData.reference);
+    if (event.event === "charge.success") {
+      const paymentData = event.data;
+      console.log("Payment Verified via Webhook:", paymentData.reference);
 
-    // TODO: Update database with payment status
-    res.status(200).json({ status: "success" });
-  } else {
-    res.status(400).json({ status: "ignored" });
+      // TODO: Update database with payment status
+      res.status(200).json({ status: "success" });
+    } else {
+      res.status(400).json({ status: "ignored" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Webhook processing failed" });
   }
 };
+
+// Get Transaction Fee
 // export const getTransactionFee = async (req, res) => {
-//   const { amount } = req.body;
-
-//   if (!amount) {
-//     return res.status(400).json({ error: "Amount is required" });
-//   }
-
 //   try {
-//     const response = await axios.get(
+//     const { amount } = req.body;
+
+//     if (!amount) {
+//       return res.status(400).json({ error: "Amount is required" });
+//     }
+
+//     const response = await fetch(
 //       `https://api.paystack.co/transaction/fee?amount=${amount}`,
 //       {
+//         method: "GET",
 //         headers: {
 //           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
 //           "Content-Type": "application/json",
@@ -103,15 +114,13 @@ export const webhook = async (req, res) => {
 //       }
 //     );
 
-//     console.log(response.data);
-//     res.json(response.data);
+//     const data = await response.json();
+//     if (!response.ok)
+//       throw new Error(data.message || "Failed to fetch transaction fee");
+
+//     res.json(data);
 //   } catch (error) {
-//     console.error(
-//       "Error getting transaction fee:",
-//       error.response?.data || error.message
-//     );
-//     res
-//       .status(500)
-//       .json({ error: error.response?.data || "Internal Server Error" });
+//     console.error("Error getting transaction fee:", error.message);
+//     res.status(500).json({ error: error.message || "Internal Server Error" });
 //   }
 // };

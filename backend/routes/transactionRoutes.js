@@ -8,8 +8,18 @@ const {
 const authController = require("../controllers/authController");
 const router = express.Router();
 
-router.post("/paystack/initialize", initializeTransaction);
-router.get("/paystack/verify", verifyTransaction);
+router.post(
+  "/paystack/initialize",
+  authController.authenticate,
+  authController.authorize("user"),
+  initializeTransaction
+);
+router.get(
+  "/paystack/verify",
+  authController.authenticate,
+  authController.authorize("user"),
+  verifyTransaction
+);
 router.get(
   "/webhook",
   express.json({

@@ -3,11 +3,14 @@ const Transaction = require("../models/transactionModel");
 const User = require("../models/userModel");
 const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
 const AppError = require("../utils/appError");
+const Notifications = require("../models/notificationModel");
 
 module.exports.createTransaction = catchAsync(async (req, res, next) => {
   const { amount, type } = req.body;
+  const remark = req.body?.remark || "";
+  let message = remark || "You just made a transaction";
 
-  console.log(amount);
+  console.log(amount, type, remark);
 
   if (!amount || isNaN(amount) || amount <= 0) {
     return next(new AppError("Amount must be a positive number", 400));
@@ -17,7 +20,8 @@ module.exports.createTransaction = catchAsync(async (req, res, next) => {
   if (!user) return next(new AppError("User not found", 404));
 
   if (type === "withdrawal" && user.balance < amount) {
-    return next(new AppError("Insufficient balance", 400));
+    message = "Insufficient balance for withdrawal";
+    return next(new AppError(message, 400));
   }
 
   // Create a transaction
@@ -30,11 +34,23 @@ module.exports.createTransaction = catchAsync(async (req, res, next) => {
 
   // Update user balance
   if (type === "deposit") {
+    message = `You just deposited ${amount} into your account`;
     user.balance += amount;
   } else if (type === "withdrawal") {
+    message = `You just withdrew ${amount} from your account`;
     user.balance -= amount;
   }
+
   await user.save();
+
+  await Notifications.create({
+    user: req.user._id,
+    title: "Payment",
+    message,
+    referenceType: "Payment",
+    referenceId: transaction._id,
+    type: "success",
+  });
 
   sendSuccessResponseData(res, "transaction", transaction, user.balance);
 });
@@ -77,6 +93,8 @@ module.exports.initializeTransaction = catchAsync(async (req, res) => {
 module.exports.verifyTransaction = catchAsync(async (req, res) => {
   try {
     const { reference } = req.query;
+
+    console.log(reference);
 
     if (!reference) {
       return res.status(400).json({ error: "Reference is required" });

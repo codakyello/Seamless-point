@@ -51,6 +51,13 @@ router.get(
 );
 
 router.get(
+  "/me/transactions",
+  authController.authenticate,
+  authController.authorize("user"),
+  userController.getMyTransactions
+);
+
+router.get(
   "/me/notifications",
   authController.authenticate,
   authController.authorize("user"),

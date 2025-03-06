@@ -1,5 +1,6 @@
 const Delivery = require("../models/deliveryModel");
 const Notifications = require("../models/notificationModel");
+const Transaction = require("../models/transactionModel");
 const User = require("../models/userModel");
 const APIFEATURES = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
@@ -105,7 +106,20 @@ module.exports.getMyNotifications = catchAsync(async function (req, res) {
 
   sendSuccessResponseData(res, "notifications", notifications);
 });
+module.exports.getMyTransactions = catchAsync(async function (req, res) {
+  const apiFeatures = new APIFEATURES(
+    Transaction.find({ user: req.user.id }),
+    req.query
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .limitFields();
 
+  const transactions = await apiFeatures.query;
+
+  sendSuccessResponseData(res, "transactions", transactions);
+});
 module.exports.getUserDelivery = catchAsync(async function (req, res) {
   const apiFeatures = new APIFEATURES(
     Delivery.find({ user: req.params.id }),

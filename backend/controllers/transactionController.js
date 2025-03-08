@@ -6,7 +6,7 @@ const AppError = require("../utils/appError");
 const Notifications = require("../models/notificationModel");
 
 module.exports.createTransaction = catchAsync(async (req, res, next) => {
-  const { amount, type } = req.body;
+  const { amount, type, reference } = req.body;
   const remark = req.body?.remark || "";
   let message = remark || "You just made a transaction";
 
@@ -24,24 +24,25 @@ module.exports.createTransaction = catchAsync(async (req, res, next) => {
     return next(new AppError(message, 400));
   }
 
-  // Create a transaction
+  // Ensure the transaction is created before modifying the user balance
   const transaction = await Transaction.create({
     user: req.user._id,
     amount,
     type,
     status: "completed",
+    reference: type === "deposit" ? reference : null,
   });
 
-  // Update user balance
+  // Update user balance correctly
   if (type === "deposit") {
     message = `You just deposited ${amount} into your account`;
-    user.balance += amount;
+    user.balance += amount; // Ensure amount is added once
   } else if (type === "withdrawal") {
     message = `You just withdrew ${amount} from your account`;
     user.balance -= amount;
   }
 
-  await user.save();
+  await user.save(); // Save the updated balance
 
   await Notifications.create({
     user: req.user._id,
@@ -64,8 +65,6 @@ module.exports.initializeTransaction = catchAsync(async (req, res) => {
       return res.status(400).json({ error: "Email and amount are required" });
     }
 
-    console.log(process.env.PAYSTACK_SECRET_KEY);
-
     const response = await fetch(
       "https://api.paystack.co/transaction/initialize",
       {
@@ -74,7 +73,13 @@ module.exports.initializeTransaction = catchAsync(async (req, res) => {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, amount }),
+        body: JSON.stringify({
+          email,
+          amount,
+          channels: ["card"], // Restrict to card payments only
+          currency: "NGN",
+          bearer: "customer",
+        }),
       }
     );
 
@@ -93,8 +98,7 @@ module.exports.initializeTransaction = catchAsync(async (req, res) => {
 module.exports.verifyTransaction = catchAsync(async (req, res) => {
   try {
     const { reference } = req.query;
-
-    console.log(reference);
+    console.log("reference", reference);
 
     if (!reference) {
       return res.status(400).json({ error: "Reference is required" });
@@ -113,9 +117,17 @@ module.exports.verifyTransaction = catchAsync(async (req, res) => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || "Verification failed");
 
+    console.log("data", data);
+
     if (data.data.status === "success") {
-      // TODO: Update database with successful transaction
-      res.json({ status: true, message: "Payment verified" });
+      // Only verify the payment, don't create transaction or update balance
+      res.json({
+        status: true,
+        message: "Payment verified",
+        data: {
+          amount: data.data.amount / 100, // Convert back from kobo to naira
+        },
+      });
     } else {
       res.status(400).json({ status: false, message: "Payment not verified" });
     }

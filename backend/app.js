@@ -40,6 +40,14 @@ app.use(
 
 app.use(express.static(`${__dirname}/public`));
 
+app.use((req, _, next) => {
+  req.rawBody = "";
+  req.on("data", (chunk) => {
+    req.rawBody += chunk;
+  });
+  next();
+});
+
 // Routes
 app.get("/", (_, res) => {
   res.send("Welcome to the Seamless Point API");

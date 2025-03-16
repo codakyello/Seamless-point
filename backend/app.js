@@ -15,6 +15,9 @@ const deliveryRoutes = require("./routes/deliveryRoutes");
 const driverRoutes = require("./routes/driverRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
+const shipmentRoutes = require("./routes/shipmentRoutes");
+const trackingRoutes = require("./routes/trackingRoutes");
+const webhookRoutes = require("./routes/webhookRoutes");
 
 dotenv.config({ path: "./config.env" });
 
@@ -62,6 +65,9 @@ app.use("/api/v1/drivers", driverRoutes);
 
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/transactions", transactionRoutes);
+app.use("/api/v1/shipment", shipmentRoutes);
+app.use("/api/v1/tracking", trackingRoutes);
+app.use("/api/v1/webhook", webhookRoutes);
 
 app.get("/", (_req, res) => {
   res.send("<h1>Deployment Check</h1>");

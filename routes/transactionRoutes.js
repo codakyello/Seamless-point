@@ -4,6 +4,9 @@ const {
   verifyTransaction,
   webhook,
   createTransaction,
+  getBanksList,
+  getAccountDetails,
+  withdrawFunds,
 } = require("../controllers/transactionController");
 const authController = require("../controllers/authController");
 const router = express.Router();
@@ -19,6 +22,25 @@ router.get(
   authController.authenticate,
   authController.authorize("user"),
   verifyTransaction
+);
+
+router.get(
+  "/paystack/listBanks",
+  authController.authenticate,
+  authController.authorize("user"),
+  getBanksList
+);
+router.post(
+  "/paystack/accountDetails",
+  authController.authenticate,
+  authController.authorize("user"),
+  getAccountDetails
+);
+router.post(
+  "/withdraw",
+  authController.authenticate,
+  authController.authorize("user"),
+  withdrawFunds
 );
 router.get(
   "/webhook",

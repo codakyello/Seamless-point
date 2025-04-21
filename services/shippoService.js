@@ -13,7 +13,6 @@ async function getShippingRates(sender, receiver, parcels) {
         address_to: receiver,
         parcels,
         async: false,
-        // carrier_accounts: ["*"], // Request rates from all available carriers
       }),
     });
 
@@ -23,33 +22,30 @@ async function getShippingRates(sender, receiver, parcels) {
       throw new Error("No shipping rates available.");
     }
 
-    // Consolidate rates by carrier and service level
-    const ratesMap = new Map();
+    const grouped = {};
 
     shipment.rates.forEach((rate) => {
-      const key = `${rate.provider} - ${rate.servicelevel.name}`; // Unique key for each service
-      if (
-        !ratesMap.has(key) ||
-        parseFloat(rate.amount) < parseFloat(ratesMap.get(key).amount)
-      ) {
-        ratesMap.set(key, {
-          provider: rate.provider,
-          service: rate.servicelevel.name,
-          amount: rate.amount,
-          currency: rate.currency,
-          estimated_days: rate.estimated_days,
-        });
+      if (!grouped[rate.provider]) {
+        grouped[rate.provider] = [];
       }
+
+      grouped[rate.provider].push({
+        service: rate.servicelevel.name,
+        amount: rate.amount,
+        currency: rate.currency,
+        estimated_days: rate.estimated_days,
+      });
     });
 
-    // Convert map values into a clean array
-    const consolidatedRates = Array.from(ratesMap.values());
+    // Convert grouped object into an array for easier use in UI
+    const result = Object.entries(grouped).map(([provider, services]) => ({
+      provider,
+      services,
+    }));
 
-    console.log("Consolidated Rates:", consolidatedRates);
-
-    return consolidatedRates;
+    return result;
   } catch (error) {
-    console.error("Error fetching shipping rates:", error);
+    console.error("Error fetching grouped shipping rates:", error);
     throw new Error(error.message);
   }
 }

@@ -44,7 +44,7 @@ router
   );
 
 router.patch(
-  "/updateBankDetails",
+  "/update-bank-details",
   authController.authenticate,
   authController.authorize("user"),
   userController.updateBankDetails
@@ -101,13 +101,18 @@ router.get(
   authController.authorize("admin"),
   userController.getAllUser
 );
-router
-  .route("/latest")
-  .get(
-    authController.authenticate,
-    authController.authorize("admin"),
-    userController.alistLatestUsers,
-    userController.getAllUser
-  );
+router.get(
+  "/latest",
+  authController.authenticate,
+  authController.authorize("admin"),
+  userController.alistLatestUsers,
+  userController.getAllUser
+);
+router.get(
+  "/:id",
+  authController.authenticate,
+  authController.authorize("admin"),
+  userController.getUser
+);
 
 module.exports = router;

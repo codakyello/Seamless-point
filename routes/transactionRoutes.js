@@ -4,6 +4,7 @@ const {
   verifyTransaction,
   webhook,
   createTransaction,
+  createVirtualAccount,
   getBanksList,
   getAccountDetails,
   withdrawFunds,
@@ -23,18 +24,23 @@ router.get(
   authController.authorize("user"),
   verifyTransaction
 );
-
 router.get(
-  "/paystack/listBanks",
+  "/paystack/list-banks",
   authController.authenticate,
   authController.authorize("user"),
   getBanksList
 );
 router.post(
-  "/paystack/accountDetails",
+  "/paystack/account-details",
   authController.authenticate,
   authController.authorize("user"),
   getAccountDetails
+);
+router.post(
+  "/paystack/virtual-account",
+  authController.authenticate,
+  authController.authorize("user"),
+  createVirtualAccount
 );
 router.post(
   "/withdraw",

@@ -5,8 +5,6 @@ const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
 const AppError = require("../utils/appError");
 const Notifications = require("../models/notificationModel");
 
-const headers = require("../utils/paystack.js");
-
 module.exports.createTransaction = catchAsync(async (req, res, next) => {
   const { amount, type, reference } = req.body;
   const remark = req.body?.remark || "";
@@ -168,7 +166,7 @@ module.exports.getAccountDetails = catchAsync(async (req, res) => {
   console.log("Account credentials", accountNumber, bankCode);
   try {
     const response = await fetch(
-      `https://api.paystack.co/bank/resolve?accountNumber=${accountNumber}&bankCode=${bankCode}`,
+      `https://api.paystack.co/bank/resolve?account_number=${accountNumber}&bank_code=${bankCode}`,
       {
         method: "GET",
         headers: {
@@ -187,7 +185,162 @@ module.exports.getAccountDetails = catchAsync(async (req, res) => {
     res.status(500).json({ error: error.message || "Internal Server Error" });
   }
 });
-// createRecipient.js
+// module.exports.createVirtualAccount = catchAsync(async (req, res) => {
+//   const {
+//     email,
+//     firstName: first_name,
+//     // last_name,
+//     phoneNumber: phone,
+//   } = req.user;
+
+//   // res.json(req.user);
+
+//   if (!email || !first_name || !phone) {
+//     return res.status(400).json({ error: "All fields are required." });
+//   }
+
+//   try {
+//     // Step 1: Create customer (or reuse if already exists in your DB)
+//     const customerRes = await fetch("https://api.paystack.co/customer", {
+//       method: "POST",
+//       headers: {
+//         Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         email,
+//         first_name,
+//         // last_name,
+//         phone,
+//       }),
+//     });
+
+//     const customerData = await customerRes.json();
+
+//     if (!customerRes.ok) {
+//       throw new Error(
+//         customerData.message || "Failed to create Paystack customer"
+//       );
+//     }
+
+//     const customerCode = customerData.data.customer_code;
+
+//     // Step 2: Create Dedicated Virtual Account for that customer
+//     const accountRes = await fetch(
+//       "https://api.paystack.co/dedicated_account",
+//       {
+//         method: "POST",
+//         headers: {
+//           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           customer: customerCode,
+//           preferred_bank: "wema-bank", // Optional: You can use "wema-bank", "providus", etc.
+//         }),
+//       }
+//     );
+
+//     const accountData = await accountRes.json();
+
+//     if (!accountRes.ok) {
+//       throw new Error(
+//         accountData.message || "Failed to create virtual account"
+//       );
+//     }
+
+//     // Step 3: Return the virtual account details
+//     res.json({
+//       success: true,
+//       message: "Virtual account created successfully",
+//       data: accountData.data, // Contains account number, bank name, etc.
+//     });
+//   } catch (err) {
+//     console.error("Error creating virtual account:", err.message);
+//     res.status(500).json({ error: err.message || "Internal Server Error" });
+//   }
+// });
+
+// Generate Monnify Access Token
+async function getMonnifyToken() {
+  const credentials = Buffer.from(
+    `${process.env.MONNIFY_API_KEY}:${process.env.MONNIFY_SECRET_KEY}`
+  ).toString("base64");
+
+  console.log("API Key:", process.env.MONNIFY_API_KEY);
+  console.log("Secret Key:", process.env.MONNIFY_SECRET_KEY);
+  console.log("Paystack secret: ", process.env.PAYSTACK_SECRET_KEY);
+
+  const res = await fetch("https://sandbox.monnify.com/api/v1/auth/login", {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${credentials}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}),
+  });
+
+  console.log("credentials: ", credentials);
+
+  const data = await res.json();
+
+  if (!res.ok)
+    throw new Error(
+      data.responseMessage || "Unable to authenticate with Monnify"
+    );
+
+  return data.responseBody.accessToken;
+}
+
+// Controller to Create Static Virtual Account
+module.exports.createVirtualAccount = catchAsync(async (req, res) => {
+  const { _id: customerRef, firstName: name, email } = req.user;
+
+  // res.json(req.user);
+
+  if (!email || !name || !customerRef) {
+    return res
+      .status(400)
+      .json({ error: "Email, name and customerRef are required." });
+  }
+
+  const accessToken = await getMonnifyToken();
+
+  const response = await fetch(
+    "https://api.monnify.com/api/v2/bank-transfer/reserved-accounts",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accountReference: customerRef, // should be unique per user
+        accountName: name,
+        currencyCode: "NGN",
+        contractCode: process.env.MONNIFY_CONTRACT_CODE,
+        customerEmail: email,
+        customerName: name,
+        getAllAvailableBanks: true, // returns multiple banks like Wema, Zenith, etc
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error("Monnify error:", data);
+    return res.status(500).json({
+      error: data.responseMessage || "Failed to create virtual account",
+    });
+  }
+
+  res.status(200).json({
+    message: "Virtual account created successfully",
+    data: data.responseBody,
+  });
+});
+
 async function createTransferRecipient({ name, account_number, bank_code }) {
   try {
     const response = await fetch("https://api.paystack.co/transferrecipient", {
@@ -301,7 +454,6 @@ module.exports.withdrawFunds = catchAsync(async (req, res, next) => {
     newBalance: user.balance,
   });
 });
-
 // Webhook for Paystack
 module.exports.webhook = catchAsync(async (req, res) => {
   try {

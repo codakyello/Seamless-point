@@ -53,7 +53,7 @@ app.use((req, _, next) => {
 
 // Routes
 app.get("/", (_, res) => {
-  res.send("Welcome to the Seamless Point API");
+  res.send("Welcome to the Seamless Point APIshhh");
 });
 app.use("/api/v1/users", userRoutes);
 
